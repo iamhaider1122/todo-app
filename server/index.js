@@ -10,6 +10,8 @@ app.get("/", (req, res) => {
   res.send("I am farooq");
 });
 
+app.use("/api/user", require("./routes/user"));
+
 app.listen(port, () => {
   console.log(`todo-app running on port ${port}`);
 });
