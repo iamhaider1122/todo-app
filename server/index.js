@@ -1,5 +1,5 @@
-console.log("farooq");
-
+const connectToMongo = require("./db");
+connectToMongo();
 const express = require("express");
 const app = express();
 const port = 5500;
