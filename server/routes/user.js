@@ -8,26 +8,27 @@ router.post(
   "/createUser",
   [
     body("name").isLength({ min: 5 }),
-    body("email").isEmail(),
+    body("email")
+      .isEmail()
+      .custom(async (value) => {
+        // Pass req as the second argument
+        console.log(value, "farooq haider alvi");
+        const existingUser = await User.findOne({ email: value });
+        if (existingUser) {
+          throw new Error("A user already exists with this e-mail address");
+        }
+      }),
     body("password").isLength({ min: 5 }).exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
-
+    console.log(errors);
     if (!errors.isEmpty()) {
-      //this will clg object as errors is of type object
-      console.log(typeof errors);
-      //this will console.log errors object that contain errors as key and array of errors as its value
-      console.log(errors);
-
-      //this will extract errors from errors object and will return them in array form
-      console.log(errors.array());
-      //.json({error:error.array()}) will return json data with key of errors and its value will be an error array
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      const user = await User.create({
+      let user = await User.create({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
