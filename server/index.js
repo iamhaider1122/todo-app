@@ -11,6 +11,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", require("./routes/user"));
+app.use("/api/task", require("./routes/task"));
 
 app.listen(port, () => {
   console.log(`todo-app running on port ${port}`);
