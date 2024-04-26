@@ -5,6 +5,7 @@ const { body, validationResult } = require("express-validator");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtSecret = "haider";
+const fetchUser = require("../middleware/fetchUser");
 //api endpoint to create a new user
 router.post(
   "/createUser",
@@ -40,8 +41,9 @@ router.post(
       });
 
       const data = {
-        data: {
+        user: {
           id: user.id,
+          role: user.role,
         },
       };
 
@@ -80,6 +82,7 @@ router.post(
       const data = {
         user: {
           id: user.id,
+          role: user.role,
         },
       };
       const token = jwt.sign(data, jwtSecret);
@@ -89,6 +92,17 @@ router.post(
     }
   }
 );
+
+router.post("/getUser", fetchUser, async (req, res) => {
+  try {
+    let userId = req.user.id;
+    const user = await User.findById(userId).select("-password");
+    res.send(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("interal server error occured.");
+  }
+});
 
 module.exports = router;
 
