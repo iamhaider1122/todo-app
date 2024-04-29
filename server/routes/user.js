@@ -118,11 +118,13 @@ router.get("/getAllUsers", authAdmin, async (req, res) => {
 });
 
 //endPoint to fetch a user
-router.get("/getUser", fetchUser, async (req, res) => {
+router.get("/getUser/:id", authAdmin, async (req, res) => {
   try {
-    let userId = req.user.id;
+    console.log(req.params.id);
+    let userId = req.params.id;
     const user = await User.findById(userId).select("-password");
-    res.send(user);
+    console.log(user);
+    res.json(user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("interal server error occured.");

@@ -14,6 +14,7 @@ const authAdmin = async (req, res, next) => {
         throw new Error("Access denied! only admin can access all users.");
       }
     } catch (error) {
+      console.log('i am here authAdmin')
       return res.status(403).send({ error: error.message });
     }
   } catch (error) {
