@@ -133,3 +133,5 @@ module.exports = router;
 
 // e bcrypt.compare() method to compare a plain text password with a hashed password stored in your database,
 //  bcrypt automatically extracts the salt from the hashed password and uses it for comparison.
+
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik
