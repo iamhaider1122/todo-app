@@ -6,6 +6,7 @@ var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtSecret = "haider";
 const fetchUser = require("../middleware/fetchUser");
+const authAdmin = require("../middleware/authAdmin");
 //api endpoint to create a new user
 router.post(
   "/createUser",
@@ -18,6 +19,17 @@ router.post(
         const existingUser = await User.findOne({ email: value });
         if (existingUser) {
           throw new Error("A user already exists with this e-mail address");
+        }
+      }),
+    body("role")
+      .exists()
+      .custom(async (value) => {
+        console.log(value, "i am value");
+        const existingUser = await User.findOne({ role: value });
+        if (existingUser) {
+          if (existingUser.role === "admin" && value === "admin") {
+            throw new Error("Admin already exists");
+          }
         }
       }),
     body("password").isLength({ min: 5 }).exists(),
@@ -38,6 +50,7 @@ router.post(
         name: req.body.name,
         email: req.body.email,
         password: secPass,
+        role: req.body.role,
       });
 
       const data = {
@@ -47,8 +60,8 @@ router.post(
         },
       };
 
-      const authToken = jwt.sign(data, jwtSecret);
-      res.send({ jwtToken: authToken });
+      const token = jwt.sign(data, jwtSecret);
+      res.json({ token: token });
     } catch (error) {
       res.status(500).send("internal server error occured.");
     }
@@ -56,7 +69,6 @@ router.post(
 );
 
 //route for login User
-
 router.post(
   "/loginUser",
   [body("email").isEmail().exists(), body("password").exists()],
@@ -85,15 +97,28 @@ router.post(
           role: user.role,
         },
       };
+
       const token = jwt.sign(data, jwtSecret);
-      res.json({ token });
+      res.json({ token: token });
     } catch (error) {
       console.log(error);
     }
   }
 );
+//endPoint to fetch all users
 
-router.post("/getUser", fetchUser, async (req, res) => {
+router.get("/getAllUsers", authAdmin, async (req, res) => {
+  try {
+    const users = await User.find({ role: "user" });
+    res.send(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("interal server error occured.");
+  }
+});
+
+//endPoint to fetch a user
+router.get("/getUser", fetchUser, async (req, res) => {
   try {
     let userId = req.user.id;
     const user = await User.findById(userId).select("-password");

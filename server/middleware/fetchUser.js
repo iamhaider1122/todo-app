@@ -9,7 +9,7 @@ const fetchUser = async (req, res, next) => {
     console.log("i am data decoded from jwt", data, "---------");
 
     req.user = data.user;
-    console.log("i am req.user", req.user, "---------------");
+    console.log("i am req.user", req.user.role, "---------------");
     next();
   } catch (error) {
     return res.status(401).send({ error: "please access using a valid token" });

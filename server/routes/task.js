@@ -19,6 +19,14 @@ router.post(
     }
 
     try {
+      if (req.user.role !== "admin") {
+        throw new Error("Only Admin can create Task");
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+
+    try {
       const task = await Task.create({
         user: req.user.id,
         title: req.body.title,
