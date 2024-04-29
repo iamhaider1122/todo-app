@@ -40,4 +40,26 @@ router.post(
   }
 );
 
+router.get(
+  "/getUserTasks/:id",
+  authAdmin,
+  async (req, res) => {
+        
+
+    try {
+       const tasks=await Task.find({user:req.params.id})
+
+      res.send(tasks);
+    } catch (error) {
+      console.log("error is coming from this side2")
+      console.error(error.message);
+      res.status(500).send("Internal Server Occured");
+    }
+  }
+);
+
+
+
+
+
 module.exports = router;
