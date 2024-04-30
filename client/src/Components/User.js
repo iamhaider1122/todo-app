@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 export default function User() {
+  const navigate=useNavigate()
   const { id } = useParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -48,6 +49,36 @@ export default function User() {
       })
       .catch((err) => console.log(err));
   };
+
+
+  const handleDelete=(id,userId)=>{
+    console.log('in handle delete',id)
+    
+    fetch("http://localhost:5500/api/task/deleteTask/" + id, {
+      method: "Delete",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
+      }
+       
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        // navigate(`/getUser/${userId}`);
+        getUserTasks()
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
   return (
     <>
       <div className="d-flex justify-content-center mt-5">
@@ -105,7 +136,8 @@ export default function User() {
                         <td>{element.description}</td>
                         <td>{element.status}</td>
                         
-                        <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success'>Update</Link></td>
+                        <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success mx-1'>Update</Link>
+                        <button className="btn btn-danger" onClick={()=>handleDelete(element._id,element.user)}>Delete</button></td>
                       </tr>
                     );
                   })}
