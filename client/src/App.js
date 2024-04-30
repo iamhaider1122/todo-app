@@ -5,6 +5,7 @@ import Navbar from "./Components/Navbar";
 import User from "./Components/User";
 import CreateTask from "./Components/CreateTask";
 import UpdateTask from "./Components/UpdateTask";
+import Login from "./Components/Login";
 function App() {
   return (
     <>
@@ -12,7 +13,9 @@ function App() {
   
       <BrowserRouter>
         <Routes>
+           
 
+          <Route path="/login" element={<><Navbar/><Login/></>}/>
           <Route path="/" element={<><Navbar/><Home/> </>} />
           <Route path="/about" element={<><Navbar/><About/> </>} />
           <Route path="/getUser/:id" element={<><Navbar/><User/> </>} />
