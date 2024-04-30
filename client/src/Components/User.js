@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -68,7 +69,7 @@ export default function User() {
 
             <Link
               to={`/getUser/${id}`}
-              className="btn btn-success"
+              className="btn btn-primary mx-2"
               onClick={getUserTasks}
             >
               View
@@ -81,7 +82,7 @@ export default function User() {
         </div>
       </div>
 
-      {tasks && (
+      {tasks.length!==0 && (
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-10">
@@ -91,7 +92,8 @@ export default function User() {
                     <th scope="col">#</th>
                     <th scope="col">title</th>
                     <th scope="col">description</th>
-                    <th scope="col">state</th>
+                    <th scope="col">Task status</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -102,6 +104,8 @@ export default function User() {
                         <td>{element.title}</td>
                         <td>{element.description}</td>
                         <td>{element.status}</td>
+                        
+                        <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success'>Update</Link></td>
                       </tr>
                     );
                   })}

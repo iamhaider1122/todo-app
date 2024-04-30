@@ -3,7 +3,8 @@ const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const Task = require("../models/Task");
 const fetchUser = require("../middleware/fetchUser");
-const authAdmin=require('../middleware/authAdmin')
+const authAdmin=require('../middleware/authAdmin');
+const User = require("../models/User");
 
 router.post(
   "/createTask/:id",
@@ -40,6 +41,47 @@ router.post(
   }
 );
 
+
+//endpoint to update a particular task
+router.put('/updateTask/:id',[
+  body("title").isLength({min:5}).exists().withMessage("Title can not be empty."),
+  body("description").isLength({min:5}).exists().withMessage(" can not be empty."),
+],authAdmin,async (req,res)=>{
+   
+  const errors=validationResult(req)
+  if (!errors.isEmpty()) {
+    console.log("error is coming from this side")
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try{
+
+    const task=await Task.findByIdAndUpdate(req.params.id,{title:req.body.title,description:req.body.description} , { new: true })
+    res.send(task)
+
+  }catch (error) {
+    console.log("error is coming from this side2")
+    console.error(error.message);
+    res.status(500).send("Internal Server Occured");
+  }
+})
+
+
+//endpoint to get a particular task by id
+router.get('/getTask/:id',authAdmin,async(req,res)=>{
+
+   try{
+      const task=await Task.findById(req.params.id)
+      console.log(task)
+      res.send(task)
+   }catch(error){
+    console.log(error.message)
+   }
+})
+
+
+
+//endpoint to get tasks of a specific user
 router.get(
   "/getUserTasks/:id",
   authAdmin,
