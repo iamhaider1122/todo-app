@@ -9,8 +9,8 @@ const User = require("../models/User");
 router.post(
   "/createTask/:id",
   [
-    body("title", "Title must be 5 characters long").isLength({ min: 5 }),
-    body("description").isLength({ min: 5 }),
+    body("title").isLength({ min: 5 }).withMessage("Title can not be empty"),
+    body("description").isLength({ min: 5 }).withMessage("Description can not be empty"),
   ],
   authAdmin,
   async (req, res) => {
@@ -46,12 +46,12 @@ router.put(
   [
     body("title")
       .isLength({ min: 5 })
-      .exists()
+      
       .withMessage("Title can not be empty."),
     body("description")
       .isLength({ min: 5 })
-      .exists()
-      .withMessage(" can not be empty."),
+       
+      .withMessage("Description can not be empty."),
   ],
   authAdmin,
   async (req, res) => {

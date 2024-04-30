@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 export default function UpdateTask() {
   const navigate = useNavigate();
+  const [errors,setErrors]=useState([])
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -41,19 +42,28 @@ export default function UpdateTask() {
         description: description,
       }),
     })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        navigate(`/getUser/${data.user}`);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    .then((res) => {
+      if (!res.ok) {
+        return res.json().then((data) => {
+          throw { status: res.status, errors: data.errors }; // Throw error with status and errors
+        });
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Data:", data);
+      navigate(`/getUser/${data.user}`);
+    })
+    .catch((error) => {
+       
+      if (error.status === 400) {
+        console.log("Validation Errors:", setErrors(error.errors));
+        // Handle validation errors here
+      }
+      else{
+        console.log("Error",error.message)
+      }
+    });
   };
 
   return (
@@ -64,11 +74,25 @@ export default function UpdateTask() {
             <div className="mb-3">
               <label htmlFor="title" className="form-label">Title</label>
               <input type="text" className="form-control" id="title" value={title}  onChange={(e) => setTitle(e.target.value)}/>
+              <div>
+                {errors.map((error, index) => (
+                  <div key={index} className="text-danger">
+                    {error.path === "title" && error.msg}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mb-3">
               <label htmlFor="description" className="form-label">Description</label>
               <input type="text" className="form-control" id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <div>
+                {errors.map((error, index) => (
+                  <div key={index} className="text-danger">
+                    {error.path === "description" && error.msg}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <button type="submit" className="btn btn-primary">Update Task</button>

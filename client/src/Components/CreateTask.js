@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
- 
 
 export default function CreateTask() {
+  const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const [title, setTitle] = useState("");
@@ -12,7 +11,7 @@ export default function CreateTask() {
   const Submit = (e) => {
     console.log(title, description);
     e.preventDefault();
-   
+
     fetch("http://localhost:5500/api/task/createTask/" + id, {
       method: "POST",
       headers: {
@@ -27,16 +26,25 @@ export default function CreateTask() {
     })
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Network response was not ok");
+          return res.json().then((data) => {
+            throw { status: res.status, errors: data.errors }; // Throw error with status and errors
+          });
         }
         return res.json();
       })
       .then((data) => {
-        console.log(data);
+        console.log("Data:", data);
         navigate(`/getUser/${id}`);
       })
       .catch((error) => {
-        console.error("Error:", error);
+         
+        if (error.status === 400) {
+          console.log("Validation Errors:", setErrors(error.errors));
+          // Handle validation errors here
+        }
+        else{
+          console.log("Error",error.message)
+        }
       });
   };
 
@@ -55,6 +63,13 @@ export default function CreateTask() {
                 id="title"
                 onChange={(e) => setTitle(e.target.value)}
               />
+              <div>
+                {errors.map((error, index) => (
+                  <div key={index} className="text-danger">
+                    {error.path === "title" && error.msg}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mb-3">
@@ -67,6 +82,13 @@ export default function CreateTask() {
                 id="description"
                 onChange={(e) => setDescription(e.target.value)}
               />
+              <div>
+                {errors.map((error, index) => (
+                  <div key={index} className="text-danger">
+                    {error.path === "description" && error.msg}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <button type="submit" className="btn btn-primary">
