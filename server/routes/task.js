@@ -57,7 +57,6 @@ router.put(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log("error is coming from this side");
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -69,7 +68,6 @@ router.put(
       );
       res.send(task);
     } catch (error) {
-      console.log("error is coming from this side2");
       console.error(error.message);
       res.status(500).send("Internal Server Occured");
     }

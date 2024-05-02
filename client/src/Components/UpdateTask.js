@@ -26,6 +26,18 @@ export default function UpdateTask() {
 
   },[])
 
+  const handleOnChange=(e)=>{
+
+    switch(e.target.id){
+      case 'title':
+        setTitle(e.target.value)
+        break
+      case 'description':
+        setDescription(e.target.value)
+        break
+    }
+
+}
 
   const Submit = (e) => {
     console.log(title, description);
@@ -74,7 +86,7 @@ export default function UpdateTask() {
           <form onSubmit={Submit}>
             <div className="mb-3">
               <label htmlFor="title" className="form-label">Title</label>
-              <input type="text" className="form-control" id="title" value={title}  onChange={(e) => setTitle(e.target.value)}/>
+              <input type="text" className="form-control" id="title" value={title}  onChange={handleOnChange}/>
 
               {errors.map((error, index) => (
                  error.path==="title" && <div key={`${index}`} className="text-danger">
@@ -85,7 +97,7 @@ export default function UpdateTask() {
 
             <div className="mb-3">
               <label htmlFor="description" className="form-label">Description</label>
-              <input type="text" className="form-control" id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <input type="text" className="form-control" id="description" value={description} onChange={handleOnChange} />
                  {errors.map((error, index) => (
                  error.path==="description" && <div key={`${index}`} className="text-danger">
                     { error.msg}

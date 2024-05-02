@@ -8,11 +8,23 @@ export default function CreateTask() {
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+ 
+  const handleOnChange=(e)=>{
 
+      switch(e.target.id){
+        case 'title':
+          setTitle(e.target.value)
+          break
+        case 'description':
+          setDescription(e.target.value)
+          break
+      }
+
+  }
   const Submit = (e) => {
     console.log(title, description);
     e.preventDefault();
-
+  
     fetch("http://localhost:5500/api/task/createTask/" + id, {
       method: "POST",
       headers: {
@@ -60,7 +72,7 @@ export default function CreateTask() {
                 type="text"
                 className="form-control"
                 id="title"
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleOnChange}
               />
               
                 {errors.map((error, index) => (
@@ -79,7 +91,7 @@ export default function CreateTask() {
                 type="text"
                 className="form-control"
                 id="description"
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleOnChange}
               />
               {errors.map((error, index) => (
                  error.path==="description" && <div key={`${index}`} className="text-danger">

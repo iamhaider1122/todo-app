@@ -65,15 +65,12 @@ export default function User() {
        
     })
       .then((res) => {
-        if (!res.ok) {
+        if (res.ok) {
+          getUserTasks()
+        }
+        else{
           throw new Error("Network response was not ok");
         }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        // navigate(`/getUser/${userId}`);
-        getUserTasks()
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -115,7 +112,7 @@ export default function User() {
         </div>
       </div>
 
-      {tasks.length!==0 && (
+      {tasks && tasks.length>0 && (
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-10">
