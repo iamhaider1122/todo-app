@@ -2,22 +2,29 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
+import { BASE_URL } from "../config";
+import { getUsers } from "../api/userApi";
 export default function Home() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5500/api/user/getAllUsers", {
-      headers: {
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
+
+
+    const fetchData=async ()=>{
+      const customURL = "user/getAllUsers/";
+      try {
+        const data = await getUsers(customURL);
+        setUsers(data)
+      } catch (error) {
+        console.log(error);
       }
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data);
-        console.log(data);
-      })
-      .catch((error) => console.log(error));
+    };
+  
+    fetchData()
+
+   
+
+
   }, []);
 
   return (

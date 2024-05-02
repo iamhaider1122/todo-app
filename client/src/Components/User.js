@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { deleteUserTask,userTasks } from "../api/taskApi";
+import { getUserInfo } from "../api/userApi";
 export default function User() {
   const navigate=useNavigate()
   const { id } = useParams();
@@ -12,70 +14,54 @@ export default function User() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [tasks, setTasks] = useState([]);
+
+
   useEffect(() => {
-    fetch("http://localhost:5500/api/user/getUser/" + id, {
-      headers: {
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
+
+    const fetchData=async ()=>{
+      const customURL = "user/getUser/";
+      try {
+        const data = await getUserInfo(customURL, id);
         setName(data.name);
-        setEmail(data.email);
-        setRole(data.role);
-      })
-      .catch((err) => console.log(err));
+             setEmail(data.email);
+            
+             setRole(data.role);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    fetchData()
+  
   }, []);
 
-  const getUserTasks = () => {
-    fetch("http://localhost:5500/api/task/getUserTasks/" + id, {
-      headers: {
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data,"i am data");
-        setTasks(data);
-        console.log(tasks,"i am tasks");
-      })
-      .catch((err) => console.log(err));
+
+
+  const getUserTasks =async () => {
+    const customURL='task/getUserTasks'
+
+    try{
+   const data=await userTasks(customURL,id)
+   setTasks(data)
+    }catch(error){
+      console.log(error)
+    }
+    
   };
 
+  const deleteTask= async (id) => {
+   console.log('i am in delete task')
+    const customURL='task/deleteTask'
+   const method='DELETE'
 
-  const handleDelete=(id,userId)=>{
-    console.log('in handle delete',id)
-    
-    fetch("http://localhost:5500/api/task/deleteTask/" + id, {
-      method: "Delete",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
-      }
-       
-    })
-      .then((res) => {
-        if (res.ok) {
-          getUserTasks()
-        }
-        else{
-          throw new Error("Network response was not ok");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    try{
+      await deleteUserTask(method,customURL,id)
+      getUserTasks();
+    }catch(error){
+      console.log('I am error occured in deleting a task',error)
+    }
   }
+ 
 
   return (
     <>
@@ -136,7 +122,7 @@ export default function User() {
                         <td>{element.status}</td>
                         
                         <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success mx-1'>Update</Link>
-                        <button className="btn btn-danger" onClick={()=>handleDelete(element._id,element.user)}>Delete</button></td>
+                        <button className="btn btn-danger" onClick={()=>deleteTask(element._id)}>Delete</button></td>
                       </tr>
                     );
                   })}
