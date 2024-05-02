@@ -12,15 +12,7 @@ router.post(
   "/createUser",
   [
     body("name", "Name must be 5 characters long").isLength({ min: 5 }),
-    body("email")
-      .isEmail()
-      .custom(async (value) => {
-        console.log(value, "farooq haider alvi");
-        const existingUser = await User.findOne({ email: value });
-        if (existingUser) {
-          throw new Error("A user already exists with this e-mail address");
-        }
-      }),
+    body("email").isEmail(),
     body("role")
       .exists()
       .custom(async (value) => {
@@ -63,6 +55,10 @@ router.post(
       const token = jwt.sign(data, jwtSecret);
       res.json({ token: token });
     } catch (error) {
+      if (error.code === 11000 && error.keyPattern.email) {
+        // Check if the error is due to duplicate email
+        return res.status(400).json({ errors: [{ msg: "Email already exists",path:"email" }] });
+      }
       res.status(500).send("internal server error occured.");
     }
   }
@@ -73,7 +69,7 @@ router.post(
   "/loginUser",
   [body("email").isEmail().exists(), body("password").exists()],
   async (req, res) => {
-    console.log(req.body.email,req.body.password,req.body)
+    console.log(req.body.email, req.body.password, req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

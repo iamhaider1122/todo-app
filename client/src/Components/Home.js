@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
 export default function Home() {
   const [users, setUsers] = useState([]);
 
@@ -20,7 +21,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <>
+    <Navbar/>
       <h2 className="text-center mt-5">All Users</h2>
       <div className="container">
         <div className="row justify-content-center">
@@ -38,7 +40,7 @@ export default function Home() {
               <tbody>
                 {users.map((element, index) => {
                   return (
-                    <tr key={index}>
+                    <tr key={`${index}`}>
                       <th scope="row">{index}</th>
                       <td>{element.name}</td>
                       <td>{element.email}</td>
@@ -52,6 +54,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

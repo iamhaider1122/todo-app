@@ -15,12 +15,12 @@ function App() {
         <Routes>
            
 
-          <Route path="/login" element={<><Navbar/><Login/></>}/>
-          <Route path="/" element={<><Navbar/><Home/> </>} />
-          <Route path="/about" element={<><Navbar/><About/> </>} />
-          <Route path="/getUser/:id" element={<><Navbar/><User/> </>} />
-          <Route path="/createTask/:id" element={<><Navbar/><CreateTask/> </>} />
-          <Route path="/updateTask/:id" element={<><Navbar/><UpdateTask/> </>} />
+          <Route path="/login" element={<><Login/></>}/>
+          <Route path="/" element={<><Home/> </>} />
+          <Route path="/about" element={<><About/> </>} />
+          <Route path="/getUser/:id" element={<><User/> </>} />
+          <Route path="/createTask/:id" element={<><CreateTask/> </>} />
+          <Route path="/updateTask/:id" element={<><UpdateTask/> </>} />
            
         </Routes>
 

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 export default function User() {
   const navigate=useNavigate()
   const { id } = useParams();
@@ -43,9 +44,9 @@ export default function User() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
+        console.log(data,"i am data");
         setTasks(data);
-        console.log(tasks);
+        console.log(tasks,"i am tasks");
       })
       .catch((err) => console.log(err));
   };
@@ -81,6 +82,7 @@ export default function User() {
 
   return (
     <>
+    <Navbar/>
       <div className="d-flex justify-content-center mt-5">
         <div className="card" style={{ width: "18rem" }}>
           <div className="card-body">
@@ -130,7 +132,7 @@ export default function User() {
                 <tbody>
                   {tasks.map((element, index) => {
                     return (
-                      <tr key={index}>
+                      <tr key={`${index}`}>
                         <th scope="row">{index}</th>
                         <td>{element.title}</td>
                         <td>{element.description}</td>

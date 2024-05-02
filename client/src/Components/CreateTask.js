@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 export default function CreateTask() {
   const [errors, setErrors] = useState([]);
@@ -24,23 +25,19 @@ export default function CreateTask() {
         description: description,
       }),
     })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((data) => {
-            throw { status: res.status, errors: data.errors }; // Throw error with status and errors
-          });
+      .then(async (res) => {
+        if (res.ok) {
+          navigate(`/getUser/${id}`);
+          return
         }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Data:", data);
-        navigate(`/getUser/${id}`);
-      })
+       const data=await res.json()
+       throw { status: res.status, errors: data.errors }; 
+   })
       .catch((error) => {
          
         if (error.status === 400) {
           console.log("Validation Errors:", setErrors(error.errors));
-          // Handle validation errors here
+ 
         }
         else{
           console.log("Error",error.message)
@@ -49,6 +46,8 @@ export default function CreateTask() {
   };
 
   return (
+    <>
+       <Navbar/>
     <div className="container mt-5 py-5">
       <div className="row justify-content-center py-2 border">
         <div className="col-6">
@@ -63,13 +62,13 @@ export default function CreateTask() {
                 id="title"
                 onChange={(e) => setTitle(e.target.value)}
               />
-              <div>
+              
                 {errors.map((error, index) => (
-                  <div key={index} className="text-danger">
-                    {error.path === "title" && error.msg}
+                 error.path==="title" && <div key={`${index}`} className="text-danger">
+                    { error.msg}
                   </div>
                 ))}
-              </div>
+              
             </div>
 
             <div className="mb-3">
@@ -82,13 +81,11 @@ export default function CreateTask() {
                 id="description"
                 onChange={(e) => setDescription(e.target.value)}
               />
-              <div>
-                {errors.map((error, index) => (
-                  <div key={index} className="text-danger">
-                    {error.path === "description" && error.msg}
+              {errors.map((error, index) => (
+                 error.path==="description" && <div key={`${index}`} className="text-danger">
+                    { error.msg}
                   </div>
                 ))}
-              </div>
             </div>
 
             <button type="submit" className="btn btn-primary">
@@ -98,5 +95,6 @@ export default function CreateTask() {
         </div>
       </div>
     </div>
+    </>
   );
 }

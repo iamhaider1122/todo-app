@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
+import Navbar from './Navbar'
 export default function Login() {
 
     const [email,setEmail]=useState()
@@ -25,18 +26,19 @@ export default function Login() {
     
   return (
     <>
+    <Navbar/>
     <div className='container mt-5 '>
         <div className='row justify-content-center '>
             <div className='col-5 border border-2 p-5'>
-            <form className='' onSubmit={Submit}>
+            <form  onSubmit={Submit}>
                 <div className="mb-3">
-                   <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-                   <input type="email" className="form-control"   onChange={(e) => setEmail(e.target.value)} id="exampleInputEmail1" aria-describedby="emailHelp"/>
+                   <label htmlFor="emailField" className="form-label">Email address</label>
+                   <input type="email" className="form-control"   onChange={(e) => setEmail(e.target.value)} id="emailField" aria-describedby="emailHelp"/>
             
                 </div>
                <div className="mb-3">
-                <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                 <input type="password"   onChange={(e) => setPassword(e.target.value)} className="form-control" id="exampleInputPassword1"/>
+                <label htmlFor="passwordField" className="form-label">Password</label>
+                 <input type="password"   onChange={(e) => setPassword(e.target.value)} className="form-control" id="passwordField"/>
                 </div>
                    
                  <button type="submit" className="btn btn-primary">Submit</button>
