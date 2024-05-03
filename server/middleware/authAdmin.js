@@ -18,7 +18,8 @@ const authAdmin = async (req, res, next) => {
       return res.status(403).send({ error: error.message });
     }
   } catch (error) {
-    return res.status(401).send({ error: "please access using a valid token" });
+    return res.status(401).json({ error: "Please access using a valid token" });
+
   }
 };
 

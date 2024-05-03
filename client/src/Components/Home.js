@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
-import { BASE_URL } from "../config";
 import { getUsers } from "../api/userApi";
+import Toast from "./Toast";
 export default function Home() {
   const [users, setUsers] = useState([]);
-
+  const [errors,setErrors]=useState({flag:false,message:'',status:''})
   useEffect(() => {
 
 
@@ -14,27 +14,29 @@ export default function Home() {
       const customURL = "user/getAllUsers/";
       try {
         const data = await getUsers(customURL);
+        
         setUsers(data)
       } catch (error) {
-        console.log(error);
+        console.log(error.status,error.message,"i am error object");
+         setErrors({flag:true,message:error.message,status:error.status})
       }
     };
   
     fetchData()
 
-   
-
-
   }, []);
+
+ 
 
   return (
     <>
+   {errors.flag && <Toast error={errors}/>}
     <Navbar/>
       <h2 className="text-center mt-5">All Users</h2>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-10">
-            <table className="table  table-striped">
+          {users.length>0 &&  <table className="table  table-striped">
               <thead>
                 <tr>
                   <th scope="col">#</th>
@@ -58,6 +60,7 @@ export default function Home() {
                 })}
               </tbody>
             </table>
+}
           </div>
         </div>
       </div>

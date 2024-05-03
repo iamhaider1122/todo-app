@@ -28,12 +28,23 @@ export const getUsers=async (url)=>{
             headers:{
                 "Content-Type": "application/json",
                 "auth-token":
-                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
+                  "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
 
             }
         })
-          return res.json()
-    }catch(error){
-        throw error
+        if (res.ok) {
+            return res.json();
+        } else {
+           const msg= await res.json()
+            const error = {
+                status: res.status,
+                message: msg.error
+            };
+            throw error;
+        }
+    } catch (error) {
+        console.error("Error Status:", error.status); // Log the error status
+        console.error("Error Message:", error.message); 
+        throw error;  
     }
-}
+};
