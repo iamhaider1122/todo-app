@@ -1,6 +1,6 @@
 import { BASE_URL } from "../config";
 
-//get info of a particular user with user id
+//get info of a particular user with user id::Admin Endpoint
 export const getUserInfo=async (url,id)=>{
 
     try{
@@ -19,8 +19,7 @@ export const getUserInfo=async (url,id)=>{
     }
 }
 
-//get all users
-
+//get all users::Admin Endpoint
 export const getUsers=async (url)=>{
 
     try{
@@ -48,3 +47,62 @@ export const getUsers=async (url)=>{
         throw error;  
     }
 };
+
+//Login user as admin or user::for Admin and User roles
+
+export const logIn= async(email,password,url)=>{
+
+        const res=await fetch(`${BASE_URL}/${url}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"  
+            },
+            body: JSON.stringify({ 
+                email: email,
+                password: password,
+            })
+        })
+        if(res.ok){
+              
+            return res.json()
+        }
+        else {
+            const msg= await res.json()
+             const error = {
+                 status: res.status,
+                 message: msg.error
+             };
+             throw error;
+            }
+     
+    
+}
+
+export const singUp= async (name,email,password,url)=>{
+
+    
+    const res=await fetch(`${BASE_URL}/${url}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"  
+        },
+        body: JSON.stringify({ 
+            name:name,
+            email: email,
+            password: password,
+            role:'user'
+        })
+    })
+    if(res.ok){
+          console.log('i am response in user api',res)
+        return res.json()
+    }
+    else {
+        const msg= await res.json()
+         const error = {
+             status: res.status,
+             message: msg.error
+         };
+         throw error;
+        }
+}

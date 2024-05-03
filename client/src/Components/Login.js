@@ -1,44 +1,57 @@
 import React from 'react'
 import { useState } from 'react'
-import Navbar from './Navbar'
+import { logIn } from '../api/userApi'
+import { useNavigate } from 'react-router-dom'
 export default function Login() {
 
     const [email,setEmail]=useState()
     const [password,setPassword]=useState()
+
+   const navigate=useNavigate()
+    
+  const handleOnChange = (e) => {
+    switch (e.target.id) {
+      case "email":
+        setEmail(e.target.value);
+        break;
+
+      case "password":
+        setPassword(e.target.value);
+        break;
+        
+      default:
+        break;
+    }
+  };
+
    
-    const Submit = (e) => {
+    const handleLogIn =async (e) => {
         console.log(email, password);
         e.preventDefault();
-        fetch('http://localhost:5500/api/user/loginUser', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"  
-            },
-            body: JSON.stringify({ 
-                email: email,
-                password: password,
-            })
-        })
-        .then(res => res.json())
-        .then(data => console.log(data.token))
-        .catch(error => console.log(error));
+        const customURL='user/loginUser'
+        try{
+           await logIn(email,password,customURL)
+           navigate('/')
+        }catch(error){
+            console.log(error.status,error.message,'I am in login component')
+        }         
     }
     
   return (
     <>
-    <Navbar/>
+    
     <div className='container mt-5 '>
         <div className='row justify-content-center '>
             <div className='col-5 border border-2 p-5'>
-            <form  onSubmit={Submit}>
+            <form  onSubmit={handleLogIn}>
                 <div className="mb-3">
-                   <label htmlFor="emailField" className="form-label">Email address</label>
-                   <input type="email" className="form-control"   onChange={(e) => setEmail(e.target.value)} id="emailField" aria-describedby="emailHelp"/>
+                   <label htmlFor="email" className="form-label">Email address</label>
+                   <input type="email" className="form-control"   onChange={handleOnChange} id="email" aria-describedby="emailHelp"/>
             
                 </div>
                <div className="mb-3">
-                <label htmlFor="passwordField" className="form-label">Password</label>
-                 <input type="password"   onChange={(e) => setPassword(e.target.value)} className="form-control" id="passwordField"/>
+                <label htmlFor="password" className="form-label">Password</label>
+                 <input type="password"   onChange={handleOnChange} className="form-control" id="password"/>
                 </div>
                    
                  <button type="submit" className="btn btn-primary">Submit</button>

@@ -6,6 +6,7 @@ import User from "./Components/User";
 import CreateTask from "./Components/CreateTask";
 import UpdateTask from "./Components/UpdateTask";
 import Login from "./Components/Login";
+import Signup from "./Components/Signup";
 function App() {
   return (
     <>
@@ -15,8 +16,9 @@ function App() {
         <Routes>
            
 
-          <Route path="/login" element={<><Login/></>}/>
-          <Route path="/" element={<><Home/> </>} />
+          <Route path="/" element={<><Login/></>}/>
+          <Route path="/home" element={<><Home/> </>} />
+          <Route path="/signup" element={<><Signup/> </>} />
           <Route path="/about" element={<><About/> </>} />
           <Route path="/getUser/:id" element={<><User/> </>} />
           <Route path="/createTask/:id" element={<><CreateTask/> </>} />

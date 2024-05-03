@@ -56,8 +56,7 @@ router.post(
       res.json({ token: token });
     } catch (error) {
       if (error.code === 11000 && error.keyPattern.email) {
-        // Check if the error is due to duplicate email
-        return res.status(400).json({ errors: [{ msg: "Email already exists",path:"email" }] });
+        return res.status(400).json({ errors: [{ msg: "Email already exists", path: "email" }] });
       }
       res.status(500).send("internal server error occured.");
     }
@@ -72,6 +71,7 @@ router.post(
     console.log(req.body.email, req.body.password, req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('error occuring here')
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -79,13 +79,13 @@ router.post(
       let user = await User.findOne({ email: req.body.email });
 
       if (!user) {
-        return res.status(400).json({ error: "Invalid username or password" });
+        return res.status(401).json({ error: "Invalid username or password" });
       }
 
       let comparePass = await bcrypt.compare(req.body.password, user.password);
 
       if (!comparePass) {
-        res.status(400).json({ error: "invalid email or password" });
+        res.status(401).json({ error: "invalid email or password" });
       }
 
       const data = {
