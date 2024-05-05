@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const jwtSecret = "haider";
 const fetchUser = require("../middleware/fetchUser");
 const authAdmin = require("../middleware/authAdmin");
+const authenticateToken = require("../middleware/authenticateToken");
 //api endpoint to create a new user
 router.post(
   "/createUser",
@@ -85,7 +86,7 @@ router.post(
       let comparePass = await bcrypt.compare(req.body.password, user.password);
 
       if (!comparePass) {
-        res.status(401).json({ error: "invalid email or password" });
+       return res.status(401).json({ error: "invalid email or password" });
       }
 
       const data = {
@@ -94,14 +95,30 @@ router.post(
           role: user.role,
         },
       };
-
+   
       const token = jwt.sign(data, jwtSecret);
-      res.json({ token: token });
+            console.log(token)
+         res.cookie('token', token,{httpOnly:true,path:'/',domain:'http:localhost:3000'}).status(200).json({token,success:true})
+      // res.json({ token: token });
     } catch (error) {
       console.log(error);
     }
   }
 );
+
+//endpoint to check if the user is valid checking token
+router.get('/protected',authenticateToken, async(req,res)=>{
+
+  if(req.user.role==='admin' || req.user.role==='user'){
+    return res.status(200).send("authenticated user")
+  }
+  else{
+    return res.status(400).send("unauthenticated user")
+  }
+
+})
+
+
 //endPoint to fetch all users
 
 router.get("/getAllUsers", authAdmin, async (req, res) => {
