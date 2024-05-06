@@ -36,8 +36,10 @@ export default function Login() {
       try {
          const data=await authUsingToken(customURL)
          console.log(data,'i am res in useEfftect')
-        if (data.success) {
+        if (data.success && data.role==='admin') {
           navigate("/home");
+        }else if(data.success && data.role==='user'){
+          navigate('/userhome')
         } else {
           navigate("/");
         }
@@ -59,8 +61,13 @@ export default function Login() {
       const data = await logIn(email, password, customURL);
       setCookie("token", data.token, { path: "/" });
       console.log(data, "I am data");
-        // const decoded = jwtDecode(data.token);
-        // console.log(decoded.user.role,"i am decoded data")
+        const decoded = jwtDecode(data.token);
+        if(decoded.user.role==='admin'){
+            navigate('/home')
+        }
+        else{
+          navigate('/userhome')
+        }
     } catch (error) {
       console.log(error.status, error.message, "I am in login component");
     }

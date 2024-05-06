@@ -5,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtSecret = "haider";
-const fetchUser = require("../middleware/fetchUser");
+
 const authAdmin = require("../middleware/authAdmin");
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -113,7 +113,7 @@ router.get('/protected',authenticateToken, async(req,res)=>{
 
    
   if(req.user.role==='admin' || req.user.role==='user'){
-    return res.status(200).json({success:true})
+    return res.status(200).json({success:true,role:req.user.role})
   }
   else{
     return res.status(400).json({error:"unauthenticated user"})
