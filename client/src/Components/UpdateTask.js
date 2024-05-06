@@ -11,7 +11,6 @@ export default function UpdateTask() {
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
 
-  //we can not define 
   useEffect(() => {
     const fetchData = async () => {
       const customURL = "task/getTask/";
@@ -24,10 +23,9 @@ export default function UpdateTask() {
         console.log(error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
 
   const handleOnChange = (e) => {
     switch (e.target.id) {
@@ -38,7 +36,7 @@ export default function UpdateTask() {
       case "description":
         setDescription(e.target.value);
         break;
-        
+
       default:
         break;
     }

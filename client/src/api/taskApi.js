@@ -89,3 +89,44 @@ export const userTasks=async (url,id)=>{
   }
 }
 
+export const getMyTasks= async(url)=>{
+
+  const res=await fetch(`${BASE_URL}/${url}`)
+  if(res.ok){
+    return res.json()
+  }
+   else {
+    const msg= await res.json()
+     const error = {
+         status: res.status,
+         message: msg.error
+     };
+     throw error;
+    }
+  
+}
+export const submitStatus =async (method, id, url,status)=>{
+
+  try {
+    const res = await fetch(`${BASE_URL}/${url}` + id, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+         },
+      body: JSON.stringify({
+        status: status
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      console.log(data)
+      throw { status: res.status, errors: data.errors };
+    }
+  } catch (error) {
+    throw error;
+  }
+  
+
+
+}
