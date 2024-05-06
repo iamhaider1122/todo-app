@@ -8,7 +8,9 @@ const jwtSecret = "haider";
 const fetchUser = require("../middleware/fetchUser");
 const authAdmin = require("../middleware/authAdmin");
 const authenticateToken = require("../middleware/authenticateToken");
-//api endpoint to create a new user
+
+
+//api endpoint to create a new user admin/user
 router.post(
   "/createUser",
   [
@@ -64,7 +66,7 @@ router.post(
   }
 );
 
-//route for login User
+//route for login User admin/user
 router.post(
   "/loginUser",
   [body("email").isEmail().exists(), body("password").exists()],
@@ -106,44 +108,50 @@ router.post(
   }
 );
 
-//endpoint to check if the user is valid checking token
+//endpoint to check if the user is valid checking token admin/user
 router.get('/protected',authenticateToken, async(req,res)=>{
 
+   
   if(req.user.role==='admin' || req.user.role==='user'){
-    return res.status(200).send("authenticated user")
+    return res.status(200).json({success:true})
   }
   else{
-    return res.status(400).send("unauthenticated user")
+    return res.status(400).json({error:"unauthenticated user"})
   }
 
 })
 
 
-//endPoint to fetch all users
+//endPoint to fetch all users::admin
 
 router.get("/getAllUsers", authAdmin, async (req, res) => {
   try {
     const users = await User.find({ role: "user" });
+    console.log(users)
     res.send(users);
+
   } catch (error) {
     console.error(error.message);
     res.status(500).send("interal server error occured.");
   }
 });
 
-//endPoint to fetch a user
+//endPoint to fetch a user::admin
 router.get("/getUser/:id", authAdmin, async (req, res) => {
   try {
     console.log(req.params.id);
     let userId = req.params.id;
     const user = await User.findById(userId).select("-password");
-    console.log(user);
+   
     res.json(user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("interal server error occured.");
   }
 });
+
+router.get('/get')
+
 
 module.exports = router;
 

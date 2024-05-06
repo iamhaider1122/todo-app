@@ -5,7 +5,9 @@ const Task = require("../models/Task");
 const fetchUser = require("../middleware/fetchUser");
 const authAdmin = require("../middleware/authAdmin");
 const User = require("../models/User");
+const authenticateToken = require("../middleware/authenticateToken");
 
+//endpoint to create a new task ::only admin
 router.post(
   "/createTask/:id",
   [
@@ -40,7 +42,7 @@ router.post(
   }
 );
 
-//endpoint to update a particular task
+//endpoint to update a particular task::only admin
 router.put(
   "/updateTask/:id",
   [
@@ -74,7 +76,7 @@ router.put(
   }
 );
 
-//endpoint to get a particular task by id
+//endpoint to get a particular task by id admin
 router.get("/getTask/:id", authAdmin, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -98,11 +100,13 @@ router.get("/getUserTasks/:id", authAdmin, async (req, res) => {
 
     res.send(tasks);
   } catch (error) {
-    console.log("error is coming from this side2");
+   
     console.error(error.message);
     res.status(500).send("Internal Server Occured");
   }
 });
+
+
 
 router.delete("/deleteTask/:id", authAdmin, async (req, res) => {
   try {

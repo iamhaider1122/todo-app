@@ -6,6 +6,7 @@ const authAdmin = async (req, res, next) => {
   const token = req.header("auth-token");
   try {
     const data = jwt.verify(token, jwtSecret);
+    
 
     try {
       if (data && data.user.role === "admin") {

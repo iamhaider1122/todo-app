@@ -27,7 +27,7 @@ export const getUsers=async (url)=>{
             headers:{
                 "Content-Type": "application/json",
                 "auth-token":
-                  "yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
+                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
 
             }
         })
@@ -78,7 +78,7 @@ export const logIn= async(email,password,url)=>{
      
     
 }
-
+//sign up for any user admin or user
 export const singUp= async (name,email,password,url)=>{
 
     
@@ -106,4 +106,28 @@ export const singUp= async (name,email,password,url)=>{
          };
          throw error;
         }
+}
+
+
+export const authUsingToken= async (url)=>{
+
+    console.log('i am in authapi')
+   
+        const res = await fetch(`${BASE_URL}/${url}`, {
+
+          credentials: "include"
+        });
+        if(res.ok){
+            console.log(res,'i am response in authusing token')
+            return res.json()
+        }
+        else {
+            const msg= await res.json()
+             const error = {
+                 status: res.status,
+                 message: msg.error
+             };
+             throw error;
+            }
+
 }
