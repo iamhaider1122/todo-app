@@ -1,8 +1,15 @@
 const connectToMongo = require("./db");
+const cookieParser = require('cookie-parser');
+
+
+// Use cookie-parser middleware to parse cookies from incoming requests
+
 connectToMongo();
 const express = require("express");
 const app = express();
 const cors=require('cors')
+
+app.use(cookieParser());
 const port = 5500;
 app.use(cors())
 app.use(express.json());

@@ -1,12 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { logIn } from '../api/userApi'
+
 import { useNavigate } from 'react-router-dom'
+import { useCookies } from 'react-cookie';
+import { jwtDecode } from 'jwt-decode'
+
+import { BASE_URL } from '../config';
 export default function Login() {
+  const [cookie,setCookie] = useCookies(['token']);
 
     const [email,setEmail]=useState()
     const [password,setPassword]=useState()
-
+ 
    const navigate=useNavigate()
     
   const handleOnChange = (e) => {
@@ -24,14 +30,52 @@ export default function Login() {
     }
   };
 
-   
+   useEffect(()=>{
+      console.log('i am in useEffect')
+    const authenticateUser= async () => {
+      console.log(cookie,'i am cookies data')
+      try{
+
+        const res=await fetch(`${BASE_URL}/user/protected`,{
+
+          headers:{
+            "Content-Type": "application/json",
+            "token":`Bearer ${cookie.token}`,
+
+        }
+        })
+        if(res.ok)
+          {
+            navigate('/home')
+          }
+          else{
+            navigate('/')
+          }
+        
+       }catch(error){
+
+        console.log(error)
+       }
+    }
+       
+    authenticateUser();
+
+   },[cookie.token])
+
+
     const handleLogIn =async (e) => {
         console.log(email, password);
         e.preventDefault();
         const customURL='user/loginUser'
+        console.log(' I am before try catch')
         try{
-           await logIn(email,password,customURL)
-           navigate('/')
+          console.log(' i am in try catch')
+          const data= await logIn(email,password,customURL)
+          setCookie('token', data.token, { path: '/' });
+           console.log(data,"I am data")
+          //  const decoded = jwtDecode(data.token);
+          //  console.log(decoded.user.role,"i am decoded data")
+            
         }catch(error){
             console.log(error.status,error.message,'I am in login component')
         }         

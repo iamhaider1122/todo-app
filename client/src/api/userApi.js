@@ -62,8 +62,9 @@ export const logIn= async(email,password,url)=>{
                 password: password,
             })
         })
+        console.log(res, "i am before if else",res.ok)
         if(res.ok){
-              
+              console.log(res)
             return res.json()
         }
         else {
