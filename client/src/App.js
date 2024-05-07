@@ -10,6 +10,7 @@ import Signup from "./Components/Signup";
 import UserHome from "./Components/UserHome";
 import UpdateTaskStatus from "./Components/UpdateTaskStatus";
 import ViewUsers from "./Components/ViewUsers";
+import LogOut from "./Components/LogOut";
 function App() {
   return (
     <>
@@ -24,11 +25,14 @@ function App() {
           <Route path="/signup" element={<><Signup/> </>} />
           <Route path="/about" element={<><About/> </>} />
           <Route path="/getUser/:id" element={<><User/> </>} />
+
           <Route path="/userhome" element={<><UserHome/> </>} />
           <Route path="/viewusers" element={<><ViewUsers/> </>} />
           <Route path="/updatetaskstatus/:id" element={<><UpdateTaskStatus/> </>} />
           <Route path="/createTask/:id" element={<><CreateTask/> </>} />
           <Route path="/updateTask/:id" element={<><UpdateTask/> </>} />
+          <Route path="/logout" element={<><LogOut/> </>} />
+
            
         </Routes>
 

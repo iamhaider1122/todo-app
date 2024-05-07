@@ -61,12 +61,10 @@ export default function Login() {
       setCookie("token", data.token, { path: "/" });
       console.log(data, "I am data");
         const decoded = jwtDecode(data.token);
-        if(decoded.user.role==='admin'){
+        if(decoded.user.role==='admin' || decoded.user.role==='user'){
             navigate('/home')
         }
-        else{
-          navigate('/userhome')
-        }
+ 
     } catch (error) {
       console.log(error.status, error.message, "I am in login component");
     }
