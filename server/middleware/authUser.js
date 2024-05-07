@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = "haider";
+ 
 
 const authUser = async (req, res, next) => {
   const token = req.cookies.token;
   
   try {
-    const data = jwt.verify(token, jwtSecret);
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     console.log(data.user.role)
     try {
       if (data && data.user.role === "user") {

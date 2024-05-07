@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = "haider";
+ 
 
 const authAdmin = async (req, res, next) => {
 
   const token = req.cookies.token;
  
   try {
-    const data = jwt.verify(token, jwtSecret);
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     
 
     try {

@@ -4,7 +4,7 @@ const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "haider";
+ 
 const authAdmin = require("../middleware/authAdmin");
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -54,7 +54,7 @@ router.post(
         },
       };
 
-      const token = jwt.sign(data, jwtSecret);
+      const token = jwt.sign(data, process.env.JWT_SECRET);
       res.json({ token: token });
     } catch (error) {
       if (error.code === 11000 && error.keyPattern.email) {
@@ -99,7 +99,7 @@ router.post(
         },
       };
    
-      const token = jwt.sign(data, jwtSecret);
+      const token = jwt.sign(data, process.env.JWT_SECRET);
             console.log(token)
          res.cookie('token', token,{httpOnly:true,path:'/',domain:'http:localhost:3000'}).status(200).json({token,success:true})
       // res.json({ token: token });
