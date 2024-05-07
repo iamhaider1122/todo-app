@@ -5,8 +5,10 @@ import { useEffect } from "react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { jwtDecode } from "jwt-decode";
 import { deleteUserTask,userTasks } from "../api/taskApi";
 import { getUserInfo } from "../api/userApi";
+import { useCookies } from "react-cookie";
 export default function User() {
   const navigate=useNavigate()
   const { id } = useParams();
@@ -14,26 +16,45 @@ export default function User() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [user, setUser] = useState({ role: "", id: "" });
 
+   const[cookies]=useCookies('token')
+  
+  const verifyToken=()=>{
+    if(cookies.token){
+      const decoded = jwtDecode(cookies.token);
+      setUser({
+          role:decoded.user.role,id:decoded.user.id
+      })
+  }
+  else{
+      navigate('/')
+  }
+   }
+
+   const fetchData=async ()=>{
+    const customURL = "user/getUser/";
+    try {
+      const data = await getUserInfo(customURL, id);
+      setName(data.name);
+           setEmail(data.email);
+          
+           setRole(data.role);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
 
-    const fetchData=async ()=>{
-      const customURL = "user/getUser/";
-      try {
-        const data = await getUserInfo(customURL, id);
-        setName(data.name);
-             setEmail(data.email);
-            
-             setRole(data.role);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+      verifyToken()
+    if(user.role==='admin' || user.role==='user'){
+      fetchData()
+    }
   
-    fetchData()
+   
   
-  }, []);
+  }, [user.role]);
 
 
 
@@ -67,7 +88,7 @@ export default function User() {
     <>
     <Navbar/>
       <div className="d-flex justify-content-center mt-5">
-        <div className="card" style={{ width: "18rem" }}>
+        <div className="card" style={{ width: "24rem" }}>
           <div className="card-body">
             <h5 className="card-title text-center">User Info</h5>
 
@@ -88,12 +109,12 @@ export default function User() {
               className="btn btn-primary mx-2"
               onClick={getUserTasks}
             >
-              View
+              View Assigned Tasks
             </Link>
 
-            <Link to={`/createTask/${id}`} className="btn btn-primary">
+           {user.role==='admin' && <Link to={`/createTask/${id}`} className="btn btn-primary">
               Assign new task
-            </Link>
+            </Link>}
           </div>
         </div>
       </div>
@@ -109,7 +130,7 @@ export default function User() {
                     <th scope="col">title</th>
                     <th scope="col">description</th>
                     <th scope="col">Task status</th>
-                    <th scope="col">Action</th>
+                  {user.role==='admin' &&  <th scope="col">Action</th> }
                   </tr>
                 </thead>
                 <tbody>
@@ -121,8 +142,8 @@ export default function User() {
                         <td>{element.description}</td>
                         <td>{element.status}</td>
                         
-                        <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success mx-1'>Update</Link>
-                        <button className="btn btn-danger" onClick={()=>deleteTask(element._id)}>Delete</button></td>
+                       {user.role==='admin' && <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success mx-1'>Update</Link>
+                        <button className="btn btn-danger" onClick={()=>deleteTask(element._id)}>Delete</button></td>}
                       </tr>
                     );
                   })}

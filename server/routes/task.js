@@ -2,10 +2,10 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const Task = require("../models/Task");
-const fetchUser = require("../middleware/fetchUser");
 const authAdmin = require("../middleware/authAdmin");
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authenticateToken");
+const authUser = require("../middleware/authUser");
 
 //endpoint to create a new task ::only admin
 router.post(
@@ -93,8 +93,8 @@ router.get("/getTask/:id",   async (req, res) => {
   }
 });
 
-//endpoint to get tasks of a specific user
-router.get("/getUserTasks/:id", authAdmin, async (req, res) => {
+//endpoint to get tasks of a specific user ::admin/user
+router.get("/getUserTasks/:id", authenticateToken, async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.params.id });
 
@@ -129,7 +129,7 @@ router.delete("/deleteTask/:id", authAdmin, async (req, res) => {
 // update status of task :: only user
 router.put(
   "/updateTaskStatus/:id",
-  [body("status").isIn(["pending", "inProgress", "fulfilled"])],
+  [body("status").isIn(["pending", "inProgress", "fulfilled"])],authUser,
   async (req, res) => {
 
     const errors = validationResult(req);

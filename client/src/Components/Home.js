@@ -1,28 +1,34 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import Navbar from "./Navbar";
-import { getUsers } from "../api/userApi";
-import Toast from "./Toast";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 export default function Home() {
-  const [users, setUsers] = useState([]);
-  const [errors,setErrors]=useState({flag:false,message:'',status:''})
-  useEffect(() => {
+  const [cookies]=useCookies('token')
+  const [user, setUser] = useState({ role: "", id: "" });
+
+  const navigate=useNavigate()
 
 
-    const fetchData=async ()=>{
-      const customURL = "user/getAllUsers/";
-      try {
-        const data = await getUsers(customURL);
-        
-        setUsers(data)
-      } catch (error) {
-        console.log(error.status,error.message,"i am error object");
-         setErrors({flag:true,message:error.message,status:error.status})
-      }
-    };
+  const verifyToken=()=>{
+    if(cookies.token){
+      const decoded = jwtDecode(cookies.token);
+      setUser({
+          role:decoded.user.role,id:decoded.user.id
+      })
+  }
+  else{
+      navigate('/')
+  }
+   }
   
-    fetchData()
+
+
+  useEffect(() => {
+      
+    verifyToken()
 
   }, []);
 
@@ -30,40 +36,16 @@ export default function Home() {
 
   return (
     <>
-   {errors.flag && <Toast error={errors}/>}
     <Navbar/>
-      <h2 className="text-center mt-5">All Users</h2>
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-10">
-          {users.length>0 &&  <table className="table  table-striped">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Role</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((element, index) => {
-                  return (
-                    <tr key={`${index}`}>
-                      <th scope="row">{index}</th>
-                      <td>{element.name}</td>
-                      <td>{element.email}</td>
-                      <td>{element.role}</td>
-                      <td> <Link to={`/getUser/${element._id}`} className='btn btn-success'>View</Link></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-}
-          </div>
-        </div>
-      </div>
+       
+       {user.role==='admin' && <div className="text-center h1 mt-5">Welcome To Admin Dashboard</div>}
+       {user.role==='user' && <>
+
+       <div className="text-center h1 text-secondary  mt-5 mb-5">Welcome To User Dashboard</div>
+       <div className="d-flex justify-content-center mt-4"> <Link to={`/userhome`} className="btn btn-primary">View My Tasks</Link></div>
+       </>
+      
+       }
     </>
   );
 }

@@ -9,13 +9,12 @@ export const Submit = async (apiMethod,title,description,id,url) => {
       method: apiMethod,
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
-      },
+           },
       body: JSON.stringify({
         title: title,
         description: description,
       }),
+      credentials: "include"
     });
 
     if (!res.ok) {
@@ -36,10 +35,11 @@ export const getTaskToUpdate =async (url,id)=>{
   try{
       const res= await fetch(`${BASE_URL}/${url}${id}`, {
       headers: {
-        "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
-      }})
+        "Content-Type": "application/json"
+       },
+       credentials: "include"
+      
+      })
     return res.json()
 
   }catch(error){
@@ -59,9 +59,9 @@ export const deleteUserTask=async(method,url,id)=>{
       method:method,
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
-      }})
+      },
+      credentials: "include"
+    })
 
   }catch(error){
     throw error
@@ -78,9 +78,9 @@ export const userTasks=async (url,id)=>{
     const res=await fetch(`${BASE_URL}/${url}/${id}`,{
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
-      }})
+     },
+     credentials: "include"
+    })
 
       return res.json()
 
@@ -89,9 +89,13 @@ export const userTasks=async (url,id)=>{
   }
 }
 
+
+
 export const getMyTasks= async(url)=>{
 
-  const res=await fetch(`${BASE_URL}/${url}`)
+  const res=await fetch(`${BASE_URL}/${url}`,{
+    credentials: "include"
+  })
   if(res.ok){
     return res.json()
   }
@@ -105,6 +109,8 @@ export const getMyTasks= async(url)=>{
     }
   
 }
+
+
 export const submitStatus =async (method, id, url,status)=>{
 
   try {
@@ -116,6 +122,7 @@ export const submitStatus =async (method, id, url,status)=>{
       body: JSON.stringify({
         status: status
       }),
+      credentials: "include"
     });
 
     if (!res.ok) {

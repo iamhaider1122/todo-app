@@ -1,16 +1,15 @@
 import { BASE_URL } from "../config";
 
-//get info of a particular user with user id::Admin Endpoint
+//get info of a particular user with user id:: admin/user
 export const getUserInfo=async (url,id)=>{
 
     try{
         const res=await fetch(`${BASE_URL}/${url}${id}`,{
             headers:{
                 "Content-Type": "application/json",
-                "auth-token":
-                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
 
-            }
+            },
+            credentials: "include"
         })
          return res.json()
     }
@@ -19,17 +18,16 @@ export const getUserInfo=async (url,id)=>{
     }
 }
 
-//get all users::Admin Endpoint
+//get all users::Admin/user  
 export const getUsers=async (url)=>{
 
     try{
         const res=await fetch(`${BASE_URL}/${url}`,{
             headers:{
                 "Content-Type": "application/json",
-                "auth-token":
-                  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYzMzhiYTFkOWEyOTllODU4ZjFlYjhlIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDY1NDExM30.LwrC1h8PlTML_TI2Vid7j72pVsB54apWz8udlplr-7c",
-
-            }
+ 
+            },
+            credentials: "include"
         })
         if (res.ok) {
             return res.json();
@@ -108,7 +106,7 @@ export const singUp= async (name,email,password,url)=>{
         }
 }
 
-
+//authenticate the token from cookies:: admin/user
 export const authUsingToken= async (url)=>{
 
     console.log('i am in authapi')

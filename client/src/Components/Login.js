@@ -36,10 +36,9 @@ export default function Login() {
       try {
          const data=await authUsingToken(customURL)
          console.log(data,'i am res in useEfftect')
-        if (data.success && data.role==='admin') {
+        if (data.success && (data.role==='admin'||data.role==='user')) {
           navigate("/home");
-        }else if(data.success && data.role==='user'){
-          navigate('/userhome')
+         
         } else {
           navigate("/");
         }

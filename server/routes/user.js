@@ -5,7 +5,6 @@ const { body, validationResult } = require("express-validator");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const jwtSecret = "haider";
-
 const authAdmin = require("../middleware/authAdmin");
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -108,6 +107,7 @@ router.post(
   }
 );
 
+
 //endpoint to check if the user is valid checking token admin/user
 router.get('/protected',authenticateToken, async(req,res)=>{
 
@@ -122,9 +122,9 @@ router.get('/protected',authenticateToken, async(req,res)=>{
 })
 
 
-//endPoint to fetch all users::admin
+//endPoint to fetch all users::admin/user
 
-router.get("/getAllUsers", authAdmin, async (req, res) => {
+router.get("/getAllUsers" ,authenticateToken ,async (req, res) => {
   try {
     const users = await User.find({ role: "user" });
     console.log(users)
@@ -136,8 +136,8 @@ router.get("/getAllUsers", authAdmin, async (req, res) => {
   }
 });
 
-//endPoint to fetch a user::admin
-router.get("/getUser/:id", authAdmin, async (req, res) => {
+//endPoint to fetch a user::admin/user
+router.get("/getUser/:id", authenticateToken ,async (req, res) => {
   try {
     console.log(req.params.id);
     let userId = req.params.id;
@@ -150,10 +150,18 @@ router.get("/getUser/:id", authAdmin, async (req, res) => {
   }
 });
 
-router.get('/get')
+
 
 
 module.exports = router;
+
+
+
+
+
+
+
+
 
 // e bcrypt.compare() method to compare a plain text password with a hashed password stored in your database,
 //  bcrypt automatically extracts the salt from the hashed password and uses it for comparison.

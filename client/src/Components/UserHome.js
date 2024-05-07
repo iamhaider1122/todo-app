@@ -1,39 +1,64 @@
 import React, { useEffect } from 'react'
 
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getMyTasks } from '../api/taskApi'
 import { Link } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
+import { jwtDecode } from 'jwt-decode'
+import { useState } from 'react'
+import Navbar from './Navbar'
 export default function UserHome() {
 
-
-    const userId=`66333d6a602fdf0f8d438ffe`
+   const navigate=useNavigate()
+     
 
      const [tasks,setTasks]=useState([])
+     const [cookies]=useCookies('token')
+     const [user,setUser]=useState({role:'',id:''})
 
+     const verifyToken=()=>{
+
+      if(cookies.token){
+        const decoded = jwtDecode(cookies.token);
+        setUser({
+            role:decoded.user.role,id:decoded.user.id
+        })
+    }
+    else{
+        navigate('/')
+    }
+     }
+
+
+     const fetchTasks=async()=>{
+            
+      const   customURL='task/getMyTasks/'+user.id
+
+         try{
+             const data=await getMyTasks(customURL)
+             setTasks(data)
+
+         }catch(error){
+             console.error(error);
+         }
+     }
 
      useEffect(()=>{
-
-        const fetchTasks=async()=>{
-            
-         const   customURL='task/getMyTasks/'+userId
-
-            try{
-                const data=await getMyTasks(customURL)
-                setTasks(data)
-
-            }catch(error){
-                console.error(error);
-            }
-        }
+        
+       verifyToken()
+       if(user.role==='user'){
         fetchTasks()
-     },[])
+       }
+       
+       
+     },[user.role])
 
 
 
 
   return (
     <div>
-        
+        <Navbar/>
         <div className='container mt-5'>
             <div className='row'>
                 <div className='col-10'>
@@ -65,6 +90,7 @@ export default function UserHome() {
               </tbody>
             </table>
             }
+            {tasks.length===0 && <div className='text-center'>No task is assigned to you.</div>}
                 </div>
             </div>
         </div>
