@@ -12,9 +12,9 @@ export default function Toast(props){
             position: "top-right",
             
           });
-    })
+    },[])
 
-    
+
     return (
       <div>
         

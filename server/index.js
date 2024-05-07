@@ -10,6 +10,8 @@ const app = express();
 const cors=require('cors')
 
 app.use(cookieParser());
+
+
 const port = 5500;
 app.use(cors({
   origin: "http://localhost:3000", // Allow requests from this origin

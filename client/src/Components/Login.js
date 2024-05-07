@@ -1,17 +1,22 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { logIn } from "../api/userApi";
-import { authUsingToken } from "../api/userApi";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
+import Toast from "./Toast";
 export default function Login() {
-  const [cookie, setCookie] = useCookies(["token"]);
-
+  const [cookie, setCookies] = useCookies(["token"]);
+  const [errors,setErrors]=useState({message:'',status:''})
+  const[cookies]=useCookies('token')
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-
+ const [user,setUser]=useState({role:'',id:''})
   const navigate = useNavigate();
+ const [flag,setFlag]=useState(false)
+
+
 
   const handleOnChange = (e) => {
     switch (e.target.id) {
@@ -28,53 +33,57 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
-    console.log("i am in useEffect");
-    const authenticateUser = async () => {
-      console.log('i am in authenticateuser')
-       const customURL='user/protected'
-      try {
-         const data=await authUsingToken(customURL)
-         console.log(data,'i am res in useEfftect')
-        if (data.success && (data.role==='admin'||data.role==='user')) {
-          navigate("/home");
-         
-        } else {
-          navigate("/");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  
+  const verifyToken=()=>{
+    if(cookies.token){
+      const decoded = jwtDecode(cookies.token);
+      setUser({
+          role:decoded.user.role,id:decoded.user.id
+      })
+  }
+  else{
+      navigate('/')
+  }
+   }
 
-    authenticateUser();
-  }, []);
+
+useEffect(()=>{
+  
+  verifyToken()
+
+},[user])
 
   const handleLogIn = async (e) => {
     console.log(email, password);
     e.preventDefault();
+    setFlag(false)
     const customURL = "user/loginUser";
     console.log(" I am before try catch");
     try {
       console.log(" i am in try catch");
       const data = await logIn(email, password, customURL);
-      setCookie("token", data.token, { path: "/" });
+      setCookies("token", data.token, { path: "/" });
       console.log(data, "I am data");
         const decoded = jwtDecode(data.token);
         if(decoded.user.role==='admin' || decoded.user.role==='user'){
             navigate('/home')
         }
+        
  
     } catch (error) {
-      console.log(error.status, error.message, "I am in login component");
+      
+      setErrors({message:error.message,status:error.status})
+      setFlag(true)
     }
   };
 
   return (
     <>
+     {flag && <Toast error={errors}/>}
       <div className="container mt-5 ">
         <div className="row justify-content-center ">
-          <div className="col-5 border border-2 p-5">
+          <div className="col-5 border customCard border-2 p-5">
+          <h3 className="text-center text-secondary">Log In</h3>
             <form onSubmit={handleLogIn}>
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
@@ -104,6 +113,7 @@ export default function Login() {
                 Submit
               </button>
             </form>
+            <p className="mt-5">Don't have an Account<Link to={`/signup`} className=" ms-2 btn btn-primary">Sign Up</Link></p>
           </div>
         </div>
       </div>

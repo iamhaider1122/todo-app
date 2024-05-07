@@ -11,6 +11,7 @@ import UserHome from "./Components/UserHome";
 import UpdateTaskStatus from "./Components/UpdateTaskStatus";
 import ViewUsers from "./Components/ViewUsers";
 import LogOut from "./Components/LogOut";
+import './App.css'
 function App() {
   return (
     <>

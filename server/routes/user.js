@@ -26,7 +26,7 @@ router.post(
           }
         }
       }),
-    body("password").isLength({ min: 5 }).exists(),
+    body("password","Password must be 6 characters long").isLength({ min: 6 }).exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -58,7 +58,9 @@ router.post(
       res.json({ token: token });
     } catch (error) {
       if (error.code === 11000 && error.keyPattern.email) {
-        return res.status(400).json({ errors: [{ msg: "Email already exists", path: "email" }] });
+        console.log('i am error from already')
+        errors.errors.push({ msg: "Email already exists", path: "email" });
+           return res.status(400).json({ errors: errors.array() });
       }
       res.status(500).send("internal server error occured.");
     }
@@ -158,12 +160,3 @@ module.exports = router;
 
 
 
-
-
-
-
-
-// e bcrypt.compare() method to compare a plain text password with a hashed password stored in your database,
-//  bcrypt automatically extracts the salt from the hashed password and uses it for comparison.
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik

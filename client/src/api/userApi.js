@@ -97,10 +97,13 @@ export const singUp= async (name,email,password,url)=>{
         return res.json()
     }
     else {
-        const msg= await res.json()
+         
+         
+         
+        console.log( 'i am error message')
          const error = {
              status: res.status,
-             message: msg.error
+             message: await res.json()
          };
          throw error;
         }

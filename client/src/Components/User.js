@@ -78,6 +78,7 @@ export default function User() {
     try{
       await deleteUserTask(method,customURL,id)
       getUserTasks();
+
     }catch(error){
       console.log('I am error occured in deleting a task',error)
     }
@@ -88,7 +89,7 @@ export default function User() {
     <>
     <Navbar/>
       <div className="d-flex justify-content-center mt-5">
-        <div className="card" style={{ width: "24rem" }}>
+        <div className="card customCard" style={{ width: "24rem" }}>
           <div className="card-body">
             <h5 className="card-title text-center">User Info</h5>
 
@@ -120,7 +121,7 @@ export default function User() {
       </div>
 
       {tasks && tasks.length>0 && (
-        <div className="container">
+        <div className="container mt-5">
           <div className="row justify-content-center">
             <div className="col-10">
               <table className="table table-striped">
