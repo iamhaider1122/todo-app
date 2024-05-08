@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { Submit, getTaskToUpdate } from "../api/taskApi";
-
+import Toast from "./Toast";
 export default function UpdateTask() {
   const navigate = useNavigate();
-  const [errors, setErrors] = useState([]);
+  const [errors,setErrors]=useState({message:'',status:''})
+  const [errFlag,setErrFlag]=useState(false)
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [user, setUser] = useState("");
-
+  const [valErrors,setValErrors]=useState([])
+  
   useEffect(() => {
     const fetchData = async () => {
       const customURL = "task/getTask/";
@@ -19,6 +21,7 @@ export default function UpdateTask() {
         setTitle(data.title);
         setDescription(data.description);
         setUser(data.user);
+        console.log(data)
       } catch (error) {
         console.log(error);
       }
@@ -47,15 +50,19 @@ export default function UpdateTask() {
 
     const method = "PUT";
     const customURL = "task/updateTask/";
-
+    setErrFlag(false)
     try {
       await Submit(method, title, description, id, customURL);
       navigate(`/getUser/${user}`);
     } catch (error) {
       if (error.status === 400) {
-        setErrors(error.errors);
-      } else {
-        console.log(error);
+         
+        setValErrors(error.message.errors);
+       
+      }
+      else{
+        setErrors({message:error.message,status:error.status})
+      setErrFlag(true)
       }
     }
   };
@@ -63,7 +70,7 @@ export default function UpdateTask() {
   return (
     <>
       <Navbar />
-
+      {errFlag&& <Toast error={errors}/>}   
       <div className="container mt-5 py-5">
         <div className="row justify-content-center py-2 border">
           <div className="col-6">
@@ -80,7 +87,7 @@ export default function UpdateTask() {
                   onChange={handleOnChange}
                 />
 
-                {errors.map(
+                {valErrors.map(
                   (error, index) =>
                     error.path === "title" && (
                       <div key={`${index}`} className="text-danger">
@@ -101,7 +108,7 @@ export default function UpdateTask() {
                   value={description}
                   onChange={handleOnChange}
                 />
-                {errors.map(
+                {valErrors.map(
                   (error, index) =>
                     error.path === "description" && (
                       <div key={`${index}`} className="text-danger">

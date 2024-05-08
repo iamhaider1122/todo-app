@@ -38,11 +38,11 @@ router.post(
     } catch (error) {
      
     
-      res.status(500).send({error:"Internal Server Occured"});
+      res.status(500).json({ error: "Internal Server Occured" });
     }
   }
 );
-
+ 
 //endpoint to update a particular task::only admin
 router.put(
   "/updateTask/:id",
@@ -72,13 +72,13 @@ router.put(
       res.send(task);
     } catch (error) {
       console.error(error.message);
-      res.status(500).send({error:"Internal Server Occured"});
+      res.status(500).json({ error: "Internal Server Occured" });
     }
   }
 );
 
 //endpoint to get a particular task by task id::  admin/user
-router.get("/getTask/:id", authUser , async (req, res) => {
+router.get("/getTask/:id", authenticateToken , async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
  
@@ -88,7 +88,7 @@ router.get("/getTask/:id", authUser , async (req, res) => {
       res.status(404).json({ error: "Not found" });
     }
   } catch (error) {
-    res.status(500).send({error:"Internal Server Occured"});
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
 
@@ -100,7 +100,7 @@ router.get("/getUserTasks/:id", authenticateToken, async (req, res) => {
     res.send(tasks);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send({error:"Internal Server Occured"});
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
 
@@ -110,7 +110,7 @@ router.get("/getMyTasks/:id", async (req, res) => {
     res.send(tasks);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send({error:"Internal Server Occured"});
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
 
@@ -146,7 +146,7 @@ router.put(
       res.send(task);
     } catch (error) {
       console.error(error.message);
-      res.status(500).send({error:"Internal Server Occured"});
+      res.status(500).json({ error: "Internal Server Occured" });
     }
 
   });

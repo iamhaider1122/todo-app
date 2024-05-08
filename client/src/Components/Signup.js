@@ -1,13 +1,20 @@
 import React, { useState,useEffect } from "react";
 import { singUp } from "../api/userApi";
 import { Link, useNavigate } from "react-router-dom";
+import Toast from "./Toast";
+
+
+
+
 export default function Signup() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [valErrors, setValErrors] = useState([]);
+  const [errors,setErrors]=useState({message:'',status:''})
 
+  const [errFlag,setErrFlag]=useState(false)
   const handleOnChange = (e) => {
     switch (e.target.id) {
       case "name":
@@ -33,7 +40,7 @@ export default function Signup() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     const customURL = "user/createUser";
-
+    setErrFlag(true)
     try {
       await singUp(name, email, password, customURL);
       navigate("/home");
@@ -44,11 +51,18 @@ export default function Signup() {
         setValErrors(error.message.errors);
        
       }
+      else{
+        setErrors({message:error.message,status:error.status})
+      setErrFlag(true)
+      }
     }
   };
 
   return (
     <>
+
+     {errFlag&& <Toast error={errors}/>}   
+  
       <div className="container mt-5  ">
         <div className="row justify-content-center  ">
           <div className="col-5 border border-2 p-5 customCard">

@@ -98,15 +98,13 @@ export const singUp= async (name,email,password,url)=>{
     }
     else {
          
-         
-         
         console.log( 'i am error message')
          const error = {
              status: res.status,
              message: await res.json()
          };
          throw error;
-        }
+    }
 }
 
 //authenticate the token from cookies:: admin/user

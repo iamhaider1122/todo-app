@@ -4,7 +4,7 @@ import { BASE_URL } from "../config";
 //create task with user id and update task with task id
 export const Submit = async (apiMethod,title,description,id,url) => {
   console.log(title, description);
-  try {
+   
     const res = await fetch(`${BASE_URL}/${url}` + id, {
       method: apiMethod,
       headers: {
@@ -17,14 +17,21 @@ export const Submit = async (apiMethod,title,description,id,url) => {
       credentials: "include"
     });
 
-    if (!res.ok) {
-      const data = await res.json();
-      console.log(data)
-      throw { status: res.status, errors: data.errors };
-    }
-  } catch (error) {
-    throw error;
-  }
+    
+   
+    if(res.ok){
+      console.log('i am response in user api',res)
+    return res.json()
+}
+else {
+     
+    console.log( 'i am error message')
+     const error = {
+         status: res.status,
+         message: await res.json()
+     };
+     throw error;
+}
 };
 
 

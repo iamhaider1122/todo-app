@@ -62,7 +62,7 @@ router.post(
         errors.errors.push({ msg: "Email already exists", path: "email" });
            return res.status(400).json({ errors: errors.array() });
       }
-      res.status(500).send({error:"Internal Server Occured"});
+      res.status(500).json({ error: "Internal Server Occured" });;
     }
   }
 );
@@ -134,7 +134,7 @@ router.get("/getAllUsers" ,authenticateToken ,async (req, res) => {
 
   } catch (error) {
     console.error(error.message);
-    res.status(500).send({error:"Internal Server Occured"})
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
 
@@ -148,11 +148,9 @@ router.get("/getUser/:id", authenticateToken ,async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send({error:"Internal Server Occured"})
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
-
-
 
 
 module.exports = router;

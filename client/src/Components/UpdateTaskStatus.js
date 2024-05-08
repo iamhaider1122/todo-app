@@ -5,11 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useCookies } from "react-cookie";
 import Navbar from "./Navbar";
+import Toast from "./Toast";
+
 export default function UpdateTaskStatus() {
   const { id } = useParams();
   const [status, setStatus] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [errors,setErrors]=useState({message:'',status:''})
+  const [errFlag,setErrFlag]=useState(false)
   const navigate=useNavigate()
 
   const [user, setUser] = useState({ role: "", id: "" });
@@ -64,14 +68,15 @@ export default function UpdateTaskStatus() {
 
     const method = "PUT";
     const customURL = "task/updateTaskStatus/";
-
+     setErrFlag(true)
     try {
       await submitStatus(method, id, customURL,status);
       
         navigate(`/userhome`);
     } catch (error) {
 
-       console.log(error);
+      setErrors({message:error.message,status:error.status})
+      setErrFlag(true)
       } 
     
 
@@ -80,6 +85,7 @@ export default function UpdateTaskStatus() {
   return (
     <>
     <Navbar/>
+    {errFlag&& <Toast error={errors}/>}
     <div className="mx-auto card customCard mt-5" style={{ width: "18rem" }}>
       <div className="card-body">
         <p className="card-title"><span className="h5">Title: </span> {title}</p>

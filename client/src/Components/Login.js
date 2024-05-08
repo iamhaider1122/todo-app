@@ -8,15 +8,13 @@ import { jwtDecode } from "jwt-decode";
 import Toast from "./Toast";
 export default function Login() {
   const [cookie, setCookies] = useCookies(["token"]);
-  const [errors,setErrors]=useState({message:'',status:''})
-  const[cookies]=useCookies('token')
+  const [errors, setErrors] = useState({ message: "", status: "" });
+  const [cookies] = useCookies("token");
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
- const [user,setUser]=useState({role:'',id:''})
+  const [user, setUser] = useState({ role: "", id: "" });
   const navigate = useNavigate();
- const [flag,setFlag]=useState(false)
-
-
+  const [flag, setErrflag] = useState(false);
 
   const handleOnChange = (e) => {
     switch (e.target.id) {
@@ -33,60 +31,55 @@ export default function Login() {
     }
   };
 
-  
-  const verifyToken=()=>{
-    if(cookies.token){
+  const verifyToken = () => {
+    console.log("i am in verify token");
+    if (cookies.token) {
       const decoded = jwtDecode(cookies.token);
       setUser({
-          role:decoded.user.role,id:decoded.user.id
-      })
-  }
-  else{
-      navigate('/')
-  }
-   }
+        role: decoded.user.role,
+        id: decoded.user.id,
+      });
 
+      navigate("/home");
+    } else {
+      navigate("/");
+    }
+  };
 
-useEffect(()=>{
-  
-  verifyToken()
-
-},[user])
+  useEffect(() => {
+    verifyToken();
+  }, []);
 
   const handleLogIn = async (e) => {
     console.log(email, password);
     e.preventDefault();
-    setFlag(false)
+    setErrflag(false);
     const customURL = "user/loginUser";
-    console.log(" I am before try catch");
+
     try {
-      console.log(" i am in try catch");
       const data = await logIn(email, password, customURL);
       setCookies("token", data.token, { path: "/" });
       console.log(data, "I am data");
-        const decoded = jwtDecode(data.token);
-        if(decoded.user.role==='admin' || decoded.user.role==='user'){
-            navigate('/home')
-        }
-        
- 
+      const decoded = jwtDecode(data.token);
+      if (decoded.user.role === "admin" || decoded.user.role === "user") {
+        navigate("/home");
+      }
     } catch (error) {
-      
-      setErrors({message:error.message,status:error.status})
-      setFlag(true)
+      setErrors({ message: error.message, status: error.status });
+      setErrflag(true);
     }
   };
 
   return (
     <>
-     {flag && <Toast error={errors}/>}
+      {flag && <Toast error={errors} />}
       <div className="container mt-5 ">
         <div className="row justify-content-center ">
           <div className="col-5 border customCard border-2 p-5">
-          <h3 className="text-center text-secondary">Log In</h3>
+            <h3 className="text-center text-secondary">Log In</h3>
             <form onSubmit={handleLogIn}>
               <div className="mb-3">
-                <label htmlFor="email" className="form-label">
+                <label htmlFor="email" className="form-label"> 
                   Email address
                 </label>
                 <input
@@ -113,7 +106,12 @@ useEffect(()=>{
                 Submit
               </button>
             </form>
-            <p className="mt-5">Don't have an Account<Link to={`/signup`} className=" ms-2 btn btn-primary">Sign Up</Link></p>
+            <p className="mt-5">
+              Don't have an Account
+              <Link to={`/signup`} className=" ms-2 btn btn-primary">
+                Sign Up
+              </Link>
+            </p>
           </div>
         </div>
       </div>
