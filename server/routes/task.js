@@ -19,14 +19,13 @@ router.post(
   authAdmin,
   async (req, res) => {
     const errors = validationResult(req);
-    console.log(req.body.title);
-    console.log(req.body.description);
+    
     if (!errors.isEmpty()) {
      
       return res.status(400).json({ errors: errors.array() });
     }
 
-    console.log(req.params.id, "/////////////i am id");
+    
 
     try {
       const task = await Task.create({
@@ -37,9 +36,9 @@ router.post(
 
       res.send(task);
     } catch (error) {
-      console.log("error is coming from this side2");
-      console.error(error.message);
-      res.status(500).send("Internal Server Occured");
+     
+    
+      res.status(500).send({error:"Internal Server Occured"});
     }
   }
 );
@@ -73,23 +72,23 @@ router.put(
       res.send(task);
     } catch (error) {
       console.error(error.message);
-      res.status(500).send("Internal Server Occured");
+      res.status(500).send({error:"Internal Server Occured"});
     }
   }
 );
 
 //endpoint to get a particular task by task id::  admin/user
-router.get("/getTask/:id",   async (req, res) => {
+router.get("/getTask/:id", authUser , async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
-    console.log(task);
+ 
     if (task) {
       res.send(task);
     } else {
       res.status(404).json({ error: "Not found" });
     }
   } catch (error) {
-    console.log(error.message);
+    res.status(500).send({error:"Internal Server Occured"});
   }
 });
 
@@ -101,7 +100,7 @@ router.get("/getUserTasks/:id", authenticateToken, async (req, res) => {
     res.send(tasks);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal Server Occured");
+    res.status(500).send({error:"Internal Server Occured"});
   }
 });
 
@@ -111,7 +110,7 @@ router.get("/getMyTasks/:id", async (req, res) => {
     res.send(tasks);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Internal Server Occured");
+    res.status(500).send({error:"Internal Server Occured"});
   }
 });
 
@@ -147,7 +146,7 @@ router.put(
       res.send(task);
     } catch (error) {
       console.error(error.message);
-      res.status(500).send("Internal Server Occured");
+      res.status(500).send({error:"Internal Server Occured"});
     }
 
   });

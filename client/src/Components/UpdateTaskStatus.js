@@ -2,33 +2,62 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getTaskToUpdate, submitStatus } from "../api/taskApi";
 import { useNavigate } from "react-router-dom";
-
-
+import { jwtDecode } from "jwt-decode";
+import { useCookies } from "react-cookie";
+import Navbar from "./Navbar";
 export default function UpdateTaskStatus() {
   const { id } = useParams();
   const [status, setStatus] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const navigate=useNavigate()
+
+  const [user, setUser] = useState({ role: "", id: "" });
   const handleOnChange = (e) => {
     console.log(e.target.value);
     setStatus(e.target.value);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      const customURL = "task/getTask/";
-      try {
-        const data = await getTaskToUpdate(customURL, id);
-        setTitle(data.title);
-        setDescription(data.description);
-        setStatus(data.status);
-      } catch (error) {
-        console.log(error);
-      }
-    };
 
-    fetchData();
-  }, []);
+
+
+
+   const[cookies]=useCookies('token')
+  
+  const verifyToken=()=>{
+
+    if(cookies.token){
+      const decoded = jwtDecode(cookies.token);
+      setUser({
+          role:decoded.user.role,id:decoded.user.id
+      })
+  }
+  else{
+      navigate('/')
+  }
+   }
+
+   const fetchData = async () => {
+    const customURL = "task/getTask/";
+    try {
+      const data = await getTaskToUpdate(customURL, id);
+      setTitle(data.title);
+      setDescription(data.description);
+      setStatus(data.status);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    verifyToken()
+
+
+    if(user.role==='admin' || user.role==='user'){
+      fetchData()
+    }
+  }, [user.role]);
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,10 +78,12 @@ export default function UpdateTaskStatus() {
   };
 
   return (
-    <div className="card" style={{ width: "18rem" }}>
+    <>
+    <Navbar/>
+    <div className="mx-auto card customCard mt-5" style={{ width: "18rem" }}>
       <div className="card-body">
-        <h5 className="card-title">{title}</h5>
-        <p className="card-text">{description}</p>
+        <p className="card-title"><span className="h5">Title: </span> {title}</p>
+        <p className="card-text"><span className="h5">Description: </span> {description}</p>
         <form onSubmit={handleSubmit}>
           <div className="form-check">
             <input
@@ -109,5 +140,6 @@ export default function UpdateTaskStatus() {
        
       </div>
     </div>
+    </>
   );
 }

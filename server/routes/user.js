@@ -62,7 +62,7 @@ router.post(
         errors.errors.push({ msg: "Email already exists", path: "email" });
            return res.status(400).json({ errors: errors.array() });
       }
-      res.status(500).send("internal server error occured.");
+      res.status(500).send({error:"Internal Server Occured"});
     }
   }
 );
@@ -104,7 +104,7 @@ router.post(
          res.cookie('token', token,{httpOnly:true,path:'/',domain:'http:localhost:3000'}).status(200).json({token,success:true})
       // res.json({ token: token });
     } catch (error) {
-      console.log(error);
+      send({error:"Internal Server Occured"})
     }
   }
 );
@@ -134,7 +134,7 @@ router.get("/getAllUsers" ,authenticateToken ,async (req, res) => {
 
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("interal server error occured.");
+    res.status(500).send({error:"Internal Server Occured"})
   }
 });
 
@@ -148,7 +148,7 @@ router.get("/getUser/:id", authenticateToken ,async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("interal server error occured.");
+    res.status(500).send({error:"Internal Server Occured"})
   }
 });
 
