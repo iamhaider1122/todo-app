@@ -1,56 +1,95 @@
+
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import { jwtDecode } from "jwt-decode";
+import { deleteUserTask,userTasks } from "../api/taskApi";
+import { getUserInfo } from "../api/userApi";
+import { useCookies } from "react-cookie";
 export default function User() {
+  const navigate=useNavigate()
   const { id } = useParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [tasks, setTasks] = useState([]);
-  useEffect(() => {
-    fetch("http://localhost:5500/api/user/getUser/" + id, {
-      headers: {
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setName(data.name);
-        setEmail(data.email);
-        setRole(data.role);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  const [user, setUser] = useState({ role: "", id: "" });
 
-  const getUserTasks = () => {
-    fetch("http://localhost:5500/api/task/getUserTasks/" + id, {
-      headers: {
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
-      },
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
+   const[cookies]=useCookies('token')
+  
+  const verifyToken=()=>{
+    if(cookies.token){
+      const decoded = jwtDecode(cookies.token);
+      setUser({
+          role:decoded.user.role,id:decoded.user.id
       })
-      .then((data) => {
-        console.log(data);
-        setTasks(data);
-        console.log(tasks);
-      })
-      .catch((err) => console.log(err));
+  }
+  else{
+      navigate('/')
+  }
+   }
+
+   const fetchData=async ()=>{
+    const customURL = "user/getUser/";
+    try {
+      const data = await getUserInfo(customURL, id);
+      setName(data.name);
+           setEmail(data.email);
+          
+           setRole(data.role);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  useEffect(() => {
+
+      verifyToken()
+    if(user.role==='admin' || user.role==='user'){
+      fetchData()
+    }
+  
+   
+  
+  }, [user.role]);
+
+
+
+  const getUserTasks =async () => {
+    const customURL='task/getUserTasks'
+
+    try{
+   const data=await userTasks(customURL,id)
+   setTasks(data)
+    }catch(error){
+      console.log(error)
+    }
+    
+  };
+
+  const deleteTask= async (id) => {
+   console.log('i am in delete task')
+    const customURL='task/deleteTask'
+   const method='DELETE'
+
+    try{
+      await deleteUserTask(method,customURL,id)
+      getUserTasks();
+
+    }catch(error){
+      console.log('I am error occured in deleting a task',error)
+    }
+  }
+ 
+
   return (
     <>
+    <Navbar/>
       <div className="d-flex justify-content-center mt-5">
-        <div className="card" style={{ width: "18rem" }}>
+        <div className="card customCard" style={{ width: "24rem" }}>
           <div className="card-body">
             <h5 className="card-title text-center">User Info</h5>
 
@@ -68,21 +107,21 @@ export default function User() {
 
             <Link
               to={`/getUser/${id}`}
-              className="btn btn-success"
+              className="btn btn-primary mx-2"
               onClick={getUserTasks}
             >
-              View
+              View Assigned Tasks
             </Link>
 
-            <Link to={`/createTask/${id}`} className="btn btn-primary">
+           {user.role==='admin' && <Link to={`/createTask/${id}`} className="btn btn-primary">
               Assign new task
-            </Link>
+            </Link>}
           </div>
         </div>
       </div>
 
-      {tasks && (
-        <div className="container">
+      {tasks && tasks.length>0 && (
+        <div className="container mt-5">
           <div className="row justify-content-center">
             <div className="col-10">
               <table className="table table-striped">
@@ -91,17 +130,21 @@ export default function User() {
                     <th scope="col">#</th>
                     <th scope="col">title</th>
                     <th scope="col">description</th>
-                    <th scope="col">state</th>
+                    <th scope="col">Task status</th>
+                  {user.role==='admin' &&  <th scope="col">Action</th> }
                   </tr>
                 </thead>
                 <tbody>
                   {tasks.map((element, index) => {
                     return (
-                      <tr key={index}>
+                      <tr key={`${index}`}>
                         <th scope="row">{index}</th>
                         <td>{element.title}</td>
                         <td>{element.description}</td>
                         <td>{element.status}</td>
+                        
+                       {user.role==='admin' && <td> <Link to={`/updateTask/${element._id}`} className='btn btn-success mx-1'>Update</Link>
+                        <button className="btn btn-danger" onClick={()=>deleteTask(element._id)}>Delete</button></td>}
                       </tr>
                     );
                   })}

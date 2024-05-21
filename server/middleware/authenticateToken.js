@@ -1,11 +1,14 @@
 const jwt = require("jsonwebtoken");
 
-const jwtSecret = "haider";
+ 
 
-const fetchUser = async (req, res, next) => {
-  const token = req.header("auth-token");
+const authenticateToken = async (req, res, next) => {
+    
+  const token = req.cookies.token;
+  console.log(token,"farooq haider tokendfdf")
+  console.log(process.env.JWT_SECRET)
   try {
-    const data = jwt.verify(token, jwtSecret);
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     console.log("i am data decoded from jwt", data, "---------");
 
     req.user = data.user;
@@ -16,4 +19,4 @@ const fetchUser = async (req, res, next) => {
   }
 };
 
-module.exports = fetchUser;
+module.exports = authenticateToken;

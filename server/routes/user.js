@@ -4,23 +4,17 @@ const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "haider";
-const fetchUser = require("../middleware/fetchUser");
+ 
 const authAdmin = require("../middleware/authAdmin");
-//api endpoint to create a new user
+const authenticateToken = require("../middleware/authenticateToken");
+
+
+//api endpoint to create a new user admin/user
 router.post(
   "/createUser",
   [
     body("name", "Name must be 5 characters long").isLength({ min: 5 }),
-    body("email")
-      .isEmail()
-      .custom(async (value) => {
-        console.log(value, "farooq haider alvi");
-        const existingUser = await User.findOne({ email: value });
-        if (existingUser) {
-          throw new Error("A user already exists with this e-mail address");
-        }
-      }),
+    body("email").isEmail(),
     body("role")
       .exists()
       .custom(async (value) => {
@@ -32,7 +26,7 @@ router.post(
           }
         }
       }),
-    body("password").isLength({ min: 5 }).exists(),
+    body("password","Password must be 6 characters long").isLength({ min: 6 }).exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -60,21 +54,28 @@ router.post(
         },
       };
 
-      const token = jwt.sign(data, jwtSecret);
+      const token = jwt.sign(data, process.env.JWT_SECRET);
       res.json({ token: token });
     } catch (error) {
-      res.status(500).send("internal server error occured.");
+      if (error.code === 11000 && error.keyPattern.email) {
+        console.log('i am error from already')
+        errors.errors.push({ msg: "Email already exists", path: "email" });
+           return res.status(400).json({ errors: errors.array() });
+      }
+      res.status(500).json({ error: "Internal Server Occured" });;
     }
   }
 );
 
-//route for login User
+//route for login User admin/user
 router.post(
   "/loginUser",
   [body("email").isEmail().exists(), body("password").exists()],
   async (req, res) => {
+    console.log(req.body.email, req.body.password, req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('error occuring here')
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -82,13 +83,13 @@ router.post(
       let user = await User.findOne({ email: req.body.email });
 
       if (!user) {
-        return res.status(400).json({ error: "Invalid username or password" });
+        return res.status(401).json({ error: "Invalid username or password" });
       }
 
       let comparePass = await bcrypt.compare(req.body.password, user.password);
 
       if (!comparePass) {
-        res.status(400).json({ error: "invalid email or password" });
+       return res.status(401).json({ error: "invalid email or password" });
       }
 
       const data = {
@@ -97,43 +98,63 @@ router.post(
           role: user.role,
         },
       };
-
-      const token = jwt.sign(data, jwtSecret);
-      res.json({ token: token });
+   
+      const token = jwt.sign(data, process.env.JWT_SECRET);
+            console.log(token)
+         res.cookie('token', token,{httpOnly:true,path:'/',domain:'http:localhost:3000'}).status(200).json({token,success:true})
+      // res.json({ token: token });
     } catch (error) {
-      console.log(error);
+      send({error:"Internal Server Occured"})
     }
   }
 );
-//endPoint to fetch all users
 
-router.get("/getAllUsers", authAdmin, async (req, res) => {
+
+//endpoint to check if the user is valid checking token admin/user
+router.get('/protected',authenticateToken, async(req,res)=>{
+
+   
+  if(req.user.role==='admin' || req.user.role==='user'){
+    return res.status(200).json({success:true,role:req.user.role})
+  }
+  else{
+    return res.status(400).json({error:"unauthenticated user"})
+  }
+
+})
+
+
+//endPoint to fetch all users::admin/user
+
+router.get("/getAllUsers" ,authenticateToken ,async (req, res) => {
   try {
     const users = await User.find({ role: "user" });
+    console.log(users)
     res.send(users);
+
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("interal server error occured.");
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
 
-//endPoint to fetch a user
-router.get("/getUser/:id", authAdmin, async (req, res) => {
+//endPoint to fetch a user::admin/user
+router.get("/getUser/:id", authenticateToken ,async (req, res) => {
   try {
     console.log(req.params.id);
     let userId = req.params.id;
     const user = await User.findById(userId).select("-password");
-    console.log(user);
+   
     res.json(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("interal server error occured.");
+    res.status(500).json({ error: "Internal Server Occured" });
   }
 });
 
+
 module.exports = router;
 
-// e bcrypt.compare() method to compare a plain text password with a hashed password stored in your database,
-//  bcrypt automatically extracts the salt from the hashed password and uses it for comparison.
 
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik
+
+

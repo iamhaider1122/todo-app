@@ -1,66 +1,64 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-
+import Navbar from "./Navbar";
+import Toast from "./Toast";
+import { Submit } from "../api/taskApi";
 export default function CreateTask() {
+  const [errors,setErrors]=useState({message:'',status:''})
+  const [errFlag,setErrFlag]=useState(false)
+  const [valErrors, setValErrors] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
-  const Submit = (e) => {
-    console.log(title, description);
-    e.preventDefault();
-    //equivalent axios syntax
-    axios.post("http://localhost:5500/api/task/createTask/" + id, {
-      title: title,
-      description: description,
-    }, {
-      headers: {
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik"
+ 
+  const handleOnChange=(e)=>{
+      switch(e.target.id){
+        case 'title':
+          setTitle(e.target.value)
+          break
+        case 'description':
+          setDescription(e.target.value)
+          break
       }
-    })
-    .then((res) => {
-      console.log(res.data);
-      navigate("/");
-    })
-    .catch((err) => console.error(err));
 
+  }
 
-   
-    fetch("http://localhost:5500/api/task/createTask/" + id, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYyZjYxMWM2MjRjYmNkNGUxMGNkZTdkIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTcxNDM4NjE5NX0.3WJQOYttPA_Hk202uI9WeLi8ejqzeHsqevHV_b2kCik",
-      },
-      body: JSON.stringify({
-        title: title,
-        description: description,
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+  const handleSubmit= async(e)=>{
+    e.preventDefault()
+    const method='POST'
+    const customURL='task/createTask/'
+    setErrFlag(false)
+    try{
+      await Submit(method,title,description,id,customURL)
+      navigate(`/getUser/${id}`);
+    }
+    catch(error){
+      if(error.status===400){
+        setValErrors(error.message.errors)
+         
+      }else{
+        console.log(error,'i am random error')
+        setErrors({message:error.message,status:error.status})
+      setErrFlag(true)
+
+        console.log(error)
+      }
+    }
     
-   };
-
+      
+     
+     
+  }
+ 
   return (
+    <>
+       <Navbar/>
+       {errFlag&& <Toast error={errors}/>} 
     <div className="container mt-5 py-5">
       <div className="row justify-content-center py-2 border">
         <div className="col-6">
-          <form onSubmit={Submit}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="title" className="form-label">
                 Title
@@ -69,8 +67,15 @@ export default function CreateTask() {
                 type="text"
                 className="form-control"
                 id="title"
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleOnChange}
               />
+              
+                {valErrors.map((error, index) => (
+                 error.path==="title" && <div key={`${index}`} className="text-danger">
+                    { error.msg}
+                  </div>
+                ))}
+              
             </div>
 
             <div className="mb-3">
@@ -81,8 +86,13 @@ export default function CreateTask() {
                 type="text"
                 className="form-control"
                 id="description"
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleOnChange}
               />
+              {valErrors.map((error, index) => (
+                 error.path==="description" && <div key={`${index}`} className="text-danger">
+                    { error.msg}
+                  </div>
+                ))}
             </div>
 
             <button type="submit" className="btn btn-primary">
@@ -92,5 +102,6 @@ export default function CreateTask() {
         </div>
       </div>
     </div>
+    </>
   );
 }

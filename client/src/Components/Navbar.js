@@ -14,7 +14,10 @@ export default function Navbar() {
     <div className="collapse navbar-collapse" id="navbarSupportedContent">
       <ul className="navbar-nav me-auto mb-2 mb-lg-0">
         <li className="nav-item">
-          <Link className="nav-link active" aria-current="page" to="/">Home</Link>
+          <Link className="nav-link active" aria-current="page" to="/home">Home</Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link active" aria-current="page" to="/viewusers">View Users</Link>
         </li>
         <li className="nav-item">
           <Link className="nav-link" to="/about">About</Link>
@@ -22,10 +25,11 @@ export default function Navbar() {
          
        
       </ul>
-      <form className="d-flex" role="search">
+      <form className="d-flex me-5" role="search">
         <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
         <button className="btn btn-outline-success" type="submit">Search</button>
       </form>
+      <Link className="ms-2 me-5  btn btn-danger" to="/logout">Log Out</Link>
     </div>
   </div>
 </nav>
